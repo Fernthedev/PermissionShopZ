@@ -1,14 +1,18 @@
 package nl.tabuu.permissionshopz;
 
-import me.lucko.luckperms.api.LuckPermsApi;
+
+import net.luckperms.api.LuckPerms;
+import net.milkbowl.vault.permission.Permission;
 import nl.tabuu.permissionshopz.bstats.Metrics;
 import nl.tabuu.permissionshopz.command.PermissionShopCommand;
 import nl.tabuu.permissionshopz.data.PerkManager;
-import nl.tabuu.permissionshopz.permissionhandler.*;
+import nl.tabuu.permissionshopz.permissionhandler.IPermissionHandler;
+import nl.tabuu.permissionshopz.permissionhandler.PermissionHandler_CUSTOM;
+import nl.tabuu.permissionshopz.permissionhandler.PermissionHandler_LuckPerms;
+import nl.tabuu.permissionshopz.permissionhandler.PermissionHandler_VAULT;
 import nl.tabuu.tabuucore.configuration.IConfiguration;
 import nl.tabuu.tabuucore.plugin.TabuuCorePlugin;
 import nl.tabuu.tabuucore.util.Dictionary;
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -21,6 +25,14 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	private PerkManager _manager;
 	private IConfiguration _config;
 	private IPermissionHandler _permissionHandler;
+	private static Permission perms = null;
+
+
+	private boolean setupPermissions() {
+		RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+		perms = rsp.getProvider();
+		return perms != null;
+	}
 
 	@Override
 	public void onEnable() {
@@ -41,29 +53,24 @@ public class PermissionShopZ extends TabuuCorePlugin {
 
 	private void setupPermissionHandler(){
 		switch (_config.getString("PermissionManager").toUpperCase()){
-			case "GROUP_MANAGER":
-				try{
-					GroupManager groupManager = (GroupManager)this.getServer().getPluginManager().getPlugin("GroupManager");
-					_permissionHandler = new PermissionHandler_GroupManager(groupManager);
-				}
-				catch(Exception e){
-					this.getLogger().severe("GroupManager was not found! Please edit the config.yml");
-					this.getServer().getPluginManager().disablePlugin(this);
-				}
-				break;
 
-			case "PERMISSIONS_EX":
-				if(this.getServer().getPluginManager().getPlugin("PermissionsEx") != null){
-					_permissionHandler = new PermissionHandler_PEX();
+			case "VAULT":
+				if(this.getServer().getPluginManager().getPlugin("Vault") != null) {
+					if(!setupPermissions()) {
+						getLogger().severe("Vault permissions not configured");
+						this.getServer().getPluginManager().disablePlugin(this);
+					} else {
+						_permissionHandler = new PermissionHandler_VAULT();
+					}
 				}
 				else{
-					this.getLogger().severe("PermissionsEx was not found! Please edit the config.yml");
+					this.getLogger().severe("Vault was not found! Please edit the config.yml");
 					this.getServer().getPluginManager().disablePlugin(this);
 				}
 				break;
 
 			case "LUCK_PERMS":
-				RegisteredServiceProvider<LuckPermsApi> provider = Bukkit.getServicesManager().getRegistration(LuckPermsApi.class);
+				RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 				if(provider != null){
 					_permissionHandler = new PermissionHandler_LuckPerms();
 				}
@@ -133,5 +140,9 @@ public class PermissionShopZ extends TabuuCorePlugin {
 
 	public static PermissionShopZ getInstance(){
 		return INSTANCE;
+	}
+
+	public static Permission getPerms() {
+		return perms;
 	}
 }

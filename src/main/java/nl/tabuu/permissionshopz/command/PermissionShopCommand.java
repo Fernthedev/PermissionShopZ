@@ -11,7 +11,6 @@ import nl.tabuu.tabuucore.command.SenderType;
 import nl.tabuu.tabuucore.command.argument.ArgumentConverter;
 import nl.tabuu.tabuucore.command.argument.ArgumentType;
 import nl.tabuu.tabuucore.command.argument.converter.OrderedArgumentConverter;
-import nl.tabuu.tabuucore.configuration.IConfiguration;
 import nl.tabuu.tabuucore.util.BukkitUtils;
 import nl.tabuu.tabuucore.util.Dictionary;
 import org.bukkit.Material;

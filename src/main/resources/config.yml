@@ -1,7 +1,6 @@
 
 # Possible options are:
-#   - "GROUP_MANAGER" (Essentials GroupManager),
-#   - "PERMISSIONS_EX" (PermissionsEx),
+#   - "Vault" (Vault supported permissions)
 #   - "LUCK_PERMS" (LuckPerms),
 #   - "CUSTOM".
 # You will have to reload/restart the server for this change to take effect.
