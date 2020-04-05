@@ -26,7 +26,7 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	private static PermissionShopZ INSTANCE;
 
 	@Getter
-	private static Config<PerkManager> config;
+	private static Config<PerkManager> configPerk;
 
 	private File configFile;
 
@@ -54,11 +54,11 @@ public class PermissionShopZ extends TabuuCorePlugin {
 		_manager = new PerkManager();
 		configFile = new File(this.getDataFolder(), "shop_data.yml");
 		try {
-			config = new SnakeYamlConfig<>(_manager, configFile);
+			configPerk = new SnakeYamlConfig<>(_manager, configFile);
 		} catch (ConfigLoadException e) {
 			e.printStackTrace();
 		}
-		load(config);
+		load(configPerk);
 
 		setupPermissionHandler();
 
@@ -110,7 +110,7 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	@Override
 	public void onDisable() {
 		try {
-			save(config);
+			save(configPerk);
 		} catch (ConfigLoadException e) {
 			e.printStackTrace();
 		}
@@ -147,8 +147,8 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	}
 
 	public void reload() throws ConfigLoadException {
-		save(config);
-		load(config);
+		save(configPerk);
+		load(configPerk);
 
 		this.getConfigurationManager().reloadAll();
 	}

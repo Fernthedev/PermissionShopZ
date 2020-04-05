@@ -26,7 +26,7 @@ public class PerkManager implements Serializable {
     public void addPerk(Perk perk){
         _perks.put(perk.getUniqueId(), perk);
         try {
-            PermissionShopZ.save(PermissionShopZ.getConfig());
+            PermissionShopZ.save(PermissionShopZ.getConfigPerk());
         } catch (ConfigLoadException e) {
             throw new IllegalStateException("Unable to save config", e);
         }
