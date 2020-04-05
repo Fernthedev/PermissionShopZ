@@ -13,7 +13,7 @@ import nl.tabuu.tabuucore.inventory.ui.InventoryFormUI;
 import nl.tabuu.tabuucore.inventory.ui.element.Button;
 import nl.tabuu.tabuucore.inventory.ui.element.style.Style;
 import nl.tabuu.tabuucore.item.ItemBuilder;
-import nl.tabuu.tabuucore.material.SafeMaterial;
+import nl.tabuu.tabuucore.material.XMaterial;
 import nl.tabuu.tabuucore.util.Dictionary;
 import nl.tabuu.tabuucore.util.vector.Vector2f;
 import org.bukkit.ChatColor;
@@ -45,7 +45,7 @@ public class ShopInterface extends InventoryFormUI {
         _player = player;
         _permissionHandler = PermissionShopZ.getInstance().getPermissionHandler();
 
-        _maxPage = PermissionShopZ.getInstance().getPerkManager().getPerksValues().size() / 9;
+        _maxPage = PermissionShopZ.getInstance().getPerkManager().getPerks().size() / 9;
 
         updateTitle();
     }
@@ -53,13 +53,13 @@ public class ShopInterface extends InventoryFormUI {
     @Override
     protected void draw() {
         ItemBuilder
-                next =              new ItemBuilder(SafeMaterial.GREEN_STAINED_GLASS_PANE)
+                next =              new ItemBuilder(XMaterial.GREEN_STAINED_GLASS_PANE)
                                             .setDisplayName(_local.translate("GUI_PAGE_NEXT")),
 
-                previous =          new ItemBuilder(SafeMaterial.GREEN_STAINED_GLASS_PANE)
+                previous =          new ItemBuilder(XMaterial.GREEN_STAINED_GLASS_PANE)
                                             .setDisplayName(_local.translate("GUI_PAGE_PREVIOUS")),
 
-                barrier =           new ItemBuilder(SafeMaterial.BARRIER)
+                barrier =           new ItemBuilder(XMaterial.BARRIER)
                                             .setDisplayName(_local.translate("GUI_PAGE_CLOSE"));
 
         Style
@@ -76,12 +76,12 @@ public class ShopInterface extends InventoryFormUI {
         setElement(new Vector2f(0, 1), previousButton);
         setElement(new Vector2f(4, 1), exitButton);
 
-        List<Perk> perks = new ArrayList<>(PermissionShopZ.getInstance().getPerkManager().getPerksValues());
+        List<Perk> perks = new ArrayList<>(PermissionShopZ.getInstance().getPerkManager().getPerks());
         for(int i = _currentPage * 9; i < (_currentPage * 9) + 9; i++){
             Vector2f position = new Vector2f(i % 9, 0);
 
             if(perks.size() < i + 1) {
-                setElement(position, new Button(new Style(SafeMaterial.AIR.toItemStack(), SafeMaterial.AIR.toItemStack())));
+                setElement(position, new Button(new Style(XMaterial.AIR.parseItem(), XMaterial.AIR.parseItem())));
                 continue;
             }
 
@@ -92,10 +92,10 @@ public class ShopInterface extends InventoryFormUI {
     }
 
     protected Button createPerkItem(Player player, Perk perk){
-        SafeMaterial unlockedItem = _config.getEnum(SafeMaterial.class, "UnlockedMaterial");
+        XMaterial unlockedItem = _config.getEnum(XMaterial.class, "UnlockedMaterial");
 
         boolean unlocked = perk.getPermissions().stream().allMatch(node -> _player.hasPermission(node));
-        ItemBuilder displayItem = new ItemBuilder(unlocked ? unlockedItem.toItemStack() : perk.getDisplayItem());
+        ItemBuilder displayItem = new ItemBuilder(unlocked ? Objects.requireNonNull(unlockedItem.parseItem()) : perk.getDisplayItem());
         displayItem.setDisplayName(ChatColor.translateAlternateColorCodes('&', perk.getName()));
 
         if(_config.getBoolean("DisplayPermissionList")){
