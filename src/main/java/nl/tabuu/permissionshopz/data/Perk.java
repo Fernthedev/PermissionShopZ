@@ -1,8 +1,12 @@
 package nl.tabuu.permissionshopz.data;
 
 import nl.tabuu.permissionshopz.PermissionShopZ;
+import nl.tabuu.tabuucore.serialization.bytes.Serializer;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -45,20 +49,20 @@ public class Perk implements Serializable {
         return permissions;
     }
 
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.writeObject(uuid);
-//        out.writeObject(name);
-//        out.writeObject(cost);
-//        out.writeObject(Serializer.ITEMSTACK.serialize(displayItem));
-//        out.writeObject(permissions);
-//
-//    }
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeObject(uuid);
+        out.writeObject(name);
+        out.writeObject(cost);
+        out.writeObject(Serializer.ITEMSTACK.serialize(displayItem));
+        out.writeObject(permissions);
 
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
-//        uuid = (UUID) in.readObject();
-//        name = (String) in.readObject();
-//        cost = (Double) in.readObject();
-//        displayItem = Serializer.ITEMSTACK.deserialize((byte[]) in.readObject())[0];
-//        permissions = (List<String>) in.readObject();
-//    }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+        uuid = (UUID) in.readObject();
+        name = (String) in.readObject();
+        cost = (Double) in.readObject();
+        displayItem = Serializer.ITEMSTACK.deserialize((byte[]) in.readObject())[0];
+        permissions = (List<String>) in.readObject();
+    }
 }

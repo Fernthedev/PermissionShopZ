@@ -27,6 +27,11 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	private IPermissionHandler _permissionHandler;
 	private static Permission perms = null;
 
+	private File configFile;
+
+	public File getConfigFile() {
+		return configFile;
+	}
 
 	private boolean setupPermissions() {
 		RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
@@ -42,7 +47,7 @@ public class PermissionShopZ extends TabuuCorePlugin {
 		_local = getConfigurationManager().addConfiguration("lang").getDictionary("");
 
 		_manager = new PerkManager();
-		load(new File(this.getDataFolder(), "shop.db"));
+		load(configFile = new File(this.getDataFolder(), "shop.db"));
 
 		setupPermissionHandler();
 

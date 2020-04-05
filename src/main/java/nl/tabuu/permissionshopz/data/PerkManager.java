@@ -1,9 +1,13 @@
 package nl.tabuu.permissionshopz.data;
 
+import nl.tabuu.permissionshopz.PermissionShopZ;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PerkManager implements Serializable {
 
@@ -20,6 +24,7 @@ public class PerkManager implements Serializable {
 
     public void addPerk(Perk perk){
         _perks.put(perk.getUniqueId(), perk);
+        PermissionShopZ.getInstance().save(PermissionShopZ.getInstance().getConfigFile());
     }
 
     public void removePerk(UUID uuid){
