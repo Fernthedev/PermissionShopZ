@@ -1,10 +1,6 @@
 package nl.tabuu.permissionshopz;
 
 
-import com.github.fernthedev.config.common.Config;
-import com.github.fernthedev.config.common.exceptions.ConfigLoadException;
-import com.github.fernthedev.config.snakeyaml.SnakeYamlConfig;
-import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.milkbowl.vault.permission.Permission;
 import nl.tabuu.permissionshopz.bstats.Metrics;
@@ -18,24 +14,15 @@ import nl.tabuu.tabuucore.configuration.IConfiguration;
 import nl.tabuu.tabuucore.plugin.TabuuCorePlugin;
 import nl.tabuu.tabuucore.util.Dictionary;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.yaml.snakeyaml.introspector.BeanAccess;
 
-import java.io.File;
+import java.io.*;
 
 public class PermissionShopZ extends TabuuCorePlugin {
 	private static PermissionShopZ INSTANCE;
 
-	@Getter
-	private static IConfiguration configPerk;
-
-	private File configFile;
-	private static PerkManager perkManager;
-
-
 	private Dictionary _local;
+	private PerkManager _manager;
 	private IConfiguration _config;
 	private IPermissionHandler _permissionHandler;
 	private static Permission perms = null;
@@ -54,10 +41,8 @@ public class PermissionShopZ extends TabuuCorePlugin {
 		_config = getConfigurationManager().addConfiguration("config");
 		_local = getConfigurationManager().addConfiguration("lang").getDictionary("");
 
-
-		configPerk = getConfigurationManager().addConfiguration("shop_data.yml");
-		perkManager = new PerkManager();
-		load(configPerk);
+		_manager = new PerkManager();
+		load(new File(this.getDataFolder(), "shop.db"));
 
 		setupPermissionHandler();
 
@@ -108,41 +93,35 @@ public class PermissionShopZ extends TabuuCorePlugin {
 
 	@Override
 	public void onDisable() {
-
-		save();
-
+		save(new File(this.getDataFolder(), "shop.db"));
 		this.getLogger().info("PermissionShopZ is now disabled.");
 	}
 
-	public static void save() {
-		configPerk.save();
-//		config.syncSave();
-//		try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-//			 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)){
-//
-//			objectOutputStream.writeObject(_manager);
-//		} catch (IOException exception){
-//			exception.printStackTrace();
-//			getLogger().severe("Could not save data!");
-//		}
+	public void save(File file){
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+			 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)){
+
+			objectOutputStream.writeObject(_manager);
+		} catch (IOException exception){
+			exception.printStackTrace();
+			getLogger().severe("Could not save data!");
+		}
 	}
 
-	public static void load(){
-		configPerk.reload();
-		perkManager.getPerks().clear();
-		configPerk.getMap("shop");
-		//		try (FileInputStream fileInputStream = new FileInputStream(file);
-//			 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
-//
-//			_manager = (PerkManager) objectInputStream.readObject();
-//		} catch (IOException | ClassNotFoundException exception) {
-//			getLogger().warning("No data found!");
-//		}
+	private void load(File file){
+		try (FileInputStream fileInputStream = new FileInputStream(file);
+			 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+
+			_manager = (PerkManager) objectInputStream.readObject();
+		} catch (IOException | ClassNotFoundException exception) {
+			getLogger().warning("No data found!");
+		}
 	}
 
-	public void reload() {
-		save();
-		load();
+	public void reload(){
+		File file = new File(this.getDataFolder(), "shop.db");
+		save(file);
+		load(file);
 
 		this.getConfigurationManager().reloadAll();
 	}
@@ -156,7 +135,7 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	}
 
 	public PerkManager getPerkManager(){
-		return ();
+		return _manager;
 	}
 
 	public static PermissionShopZ getInstance(){

@@ -1,6 +1,5 @@
 package nl.tabuu.permissionshopz.command;
 
-import com.github.fernthedev.config.common.exceptions.ConfigLoadException;
 import nl.tabuu.permissionshopz.PermissionShopZ;
 import nl.tabuu.permissionshopz.data.PerkManager;
 import nl.tabuu.permissionshopz.gui.ShopEditInterface;
@@ -12,6 +11,7 @@ import nl.tabuu.tabuucore.command.SenderType;
 import nl.tabuu.tabuucore.command.argument.ArgumentConverter;
 import nl.tabuu.tabuucore.command.argument.ArgumentType;
 import nl.tabuu.tabuucore.command.argument.converter.OrderedArgumentConverter;
+import nl.tabuu.tabuucore.util.BukkitUtils;
 import nl.tabuu.tabuucore.util.Dictionary;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -71,22 +71,21 @@ public class PermissionShopCommand extends Command {
 			for(int i = 2; i < list.size(); i++)
 				nodes.add((String) list.get(i).get());
 
+			ItemStack itemStack = BukkitUtils.getItemInMainHand(player);
 
-			ItemStack itemStack = player.getInventory().getItemInMainHand();
-
-			if(itemStack.getType().equals(Material.AIR)){
+			if(itemStack == null || itemStack.getType().equals(Material.AIR)){
 				Message.send(player, _local.translate("ERROR_INVALIDITEM"));
 				return CommandResult.SUCCESS;
 			}
 
-			_manager.createPerk(name, cost, itemStack, nodes.toArray(new String[0]));
+			_manager.createPerk(name, cost, itemStack, nodes.stream().toArray(String[]::new));
 			Message.send(player, _local.translate("PERK_ADD_SUCCESS", "{PERK_NAME}", name));
 
 			return CommandResult.SUCCESS;
 		}
 	}
 
-	static class PermissionShopRemoveCommand extends Command {
+	class PermissionShopRemoveCommand extends Command {
 		private PermissionShopRemoveCommand(Command parent) {
 			super("permissionshopz remove", parent);
 
@@ -108,13 +107,8 @@ public class PermissionShopCommand extends Command {
 
 		@Override
 		protected CommandResult onCommand(CommandSender commandSender, List<Optional<?>> list) {
-			try {
-				PermissionShopZ.getInstance().reload();
-				commandSender.sendMessage(_local.translate("PLUGIN_RELOAD_SUCCESS"));
-			} catch (ConfigLoadException e) {
-				throw new IllegalStateException(e);
-			}
-
+			PermissionShopZ.getInstance().reload();
+			commandSender.sendMessage(_local.translate("PLUGIN_RELOAD_SUCCESS"));
 			return CommandResult.SUCCESS;
 		}
 	}
