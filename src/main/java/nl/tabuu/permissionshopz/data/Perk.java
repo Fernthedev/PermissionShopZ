@@ -1,68 +1,64 @@
 package nl.tabuu.permissionshopz.data;
 
 import nl.tabuu.permissionshopz.PermissionShopZ;
-import nl.tabuu.tabuucore.serialization.bytes.Serializer;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 public class Perk implements Serializable {
-    private UUID _uuid;
-    private String _name;
-    private double _cost;
-    private ItemStack _displayItem;
-    private List<String> _permissions;
+    private UUID uuid;
+    private String name;
+    private double cost;
+    private ItemStack displayItem;
+    private List<String> permissions;
 
     public Perk(String name, double cost, ItemStack displayItem, List<String> permissions){
-        _name = name;
-        _cost = cost;
-        _displayItem = displayItem;
-        _permissions = permissions;
+        this.name = name;
+        this.cost = cost;
+        this.displayItem = displayItem;
+        this.permissions = permissions;
 
-        _uuid = UUID.randomUUID();
-        while(PermissionShopZ.getInstance().getPerkManager().getPerk(_uuid) != null)
-            _uuid = UUID.randomUUID();
+        uuid = UUID.randomUUID();
+        while(PermissionShopZ.getInstance().getPerkManager().getPerk(uuid) != null)
+            uuid = UUID.randomUUID();
     }
 
     public UUID getUniqueId(){
-        return _uuid;
+        return uuid;
     }
 
     public String getName(){
-        return _name;
+        return name;
     }
 
     public double getCost(){
-        return _cost;
+        return cost;
     }
 
     public ItemStack getDisplayItem(){
-        return _displayItem.clone();
+        return displayItem.clone();
     }
 
     public List<String> getPermissions(){
-        return _permissions;
+        return permissions;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeObject(_uuid);
-        out.writeObject(_name);
-        out.writeObject(_cost);
-        out.writeObject(Serializer.ITEMSTACK.serialize(_displayItem));
-        out.writeObject(_permissions);
+//    private void writeObject(ObjectOutputStream out) throws IOException {
+//        out.writeObject(uuid);
+//        out.writeObject(name);
+//        out.writeObject(cost);
+//        out.writeObject(Serializer.ITEMSTACK.serialize(displayItem));
+//        out.writeObject(permissions);
+//
+//    }
 
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
-        _uuid = (UUID) in.readObject();
-        _name = (String) in.readObject();
-        _cost = (Double) in.readObject();
-        _displayItem = Serializer.ITEMSTACK.deserialize((byte[]) in.readObject())[0];
-        _permissions = (List<String>) in.readObject();
-    }
+//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+//        uuid = (UUID) in.readObject();
+//        name = (String) in.readObject();
+//        cost = (Double) in.readObject();
+//        displayItem = Serializer.ITEMSTACK.deserialize((byte[]) in.readObject())[0];
+//        permissions = (List<String>) in.readObject();
+//    }
 }

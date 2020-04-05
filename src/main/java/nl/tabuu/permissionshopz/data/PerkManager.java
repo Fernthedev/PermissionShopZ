@@ -1,6 +1,7 @@
 package nl.tabuu.permissionshopz.data;
 
 import com.github.fernthedev.config.common.exceptions.ConfigLoadException;
+import lombok.Getter;
 import nl.tabuu.permissionshopz.PermissionShopZ;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,10 +13,11 @@ import java.util.UUID;
 
 public class PerkManager implements Serializable {
 
-    private HashMap<UUID, Perk> _perks;
+    @Getter
+    private HashMap<UUID, Perk> perks;
 
     public PerkManager(){
-        _perks = new HashMap<>();
+        perks = new HashMap<>();
     }
 
     public void createPerk(String name, double cost, ItemStack displayItem, String... permissions){
@@ -24,7 +26,7 @@ public class PerkManager implements Serializable {
     }
 
     public void addPerk(Perk perk){
-        _perks.put(perk.getUniqueId(), perk);
+        perks.put(perk.getUniqueId(), perk);
         try {
             PermissionShopZ.save(PermissionShopZ.getConfigPerk());
         } catch (ConfigLoadException e) {
@@ -33,15 +35,15 @@ public class PerkManager implements Serializable {
     }
 
     public void removePerk(UUID uuid){
-        _perks.remove(uuid);
+        perks.remove(uuid);
     }
 
     public Perk getPerk(UUID uuid){
-        return _perks.get(uuid);
+        return perks.get(uuid);
     }
 
-    public Collection<Perk> getPerks(){
-        return _perks.values();
+    public Collection<Perk> getPerksValues(){
+        return perks.values();
     }
 
 }

@@ -37,8 +37,6 @@ dependencies {
     compileOnly 'com.google.code.gson:gson:2.8.6'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly 'net.luckperms:api:5.0'
-    implementation 'com.github.Fernthedev:fern-configmanager:1.2.4'
-    implementation 'org.yaml:snakeyaml:1.26'
 }
 
 jar.dependsOn(shadowJar)

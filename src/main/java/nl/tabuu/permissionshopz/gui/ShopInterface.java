@@ -45,7 +45,7 @@ public class ShopInterface extends InventoryFormUI {
         _player = player;
         _permissionHandler = PermissionShopZ.getInstance().getPermissionHandler();
 
-        _maxPage = PermissionShopZ.getInstance().getPerkManager().getPerks().size() / 9;
+        _maxPage = PermissionShopZ.getInstance().getPerkManager().getPerksValues().size() / 9;
 
         updateTitle();
     }
@@ -76,7 +76,7 @@ public class ShopInterface extends InventoryFormUI {
         setElement(new Vector2f(0, 1), previousButton);
         setElement(new Vector2f(4, 1), exitButton);
 
-        List<Perk> perks = new ArrayList<>(PermissionShopZ.getInstance().getPerkManager().getPerks());
+        List<Perk> perks = new ArrayList<>(PermissionShopZ.getInstance().getPerkManager().getPerksValues());
         for(int i = _currentPage * 9; i < (_currentPage * 9) + 9; i++){
             Vector2f position = new Vector2f(i % 9, 0);
 

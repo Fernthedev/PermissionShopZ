@@ -18,7 +18,10 @@ import nl.tabuu.tabuucore.configuration.IConfiguration;
 import nl.tabuu.tabuucore.plugin.TabuuCorePlugin;
 import nl.tabuu.tabuucore.util.Dictionary;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.yaml.snakeyaml.introspector.BeanAccess;
 
 import java.io.File;
 
@@ -26,13 +29,13 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	private static PermissionShopZ INSTANCE;
 
 	@Getter
-	private static Config<PerkManager> configPerk;
+	private static IConfiguration configPerk;
 
 	private File configFile;
+	private static PerkManager perkManager;
 
 
 	private Dictionary _local;
-	private PerkManager _manager;
 	private IConfiguration _config;
 	private IPermissionHandler _permissionHandler;
 	private static Permission perms = null;
@@ -51,13 +54,9 @@ public class PermissionShopZ extends TabuuCorePlugin {
 		_config = getConfigurationManager().addConfiguration("config");
 		_local = getConfigurationManager().addConfiguration("lang").getDictionary("");
 
-		_manager = new PerkManager();
-		configFile = new File(this.getDataFolder(), "shop_data.yml");
-		try {
-			configPerk = new SnakeYamlConfig<>(_manager, configFile);
-		} catch (ConfigLoadException e) {
-			e.printStackTrace();
-		}
+
+		configPerk = getConfigurationManager().addConfiguration("shop_data.yml");
+		perkManager = new PerkManager();
 		load(configPerk);
 
 		setupPermissionHandler();
@@ -109,17 +108,14 @@ public class PermissionShopZ extends TabuuCorePlugin {
 
 	@Override
 	public void onDisable() {
-		try {
-			save(configPerk);
-		} catch (ConfigLoadException e) {
-			e.printStackTrace();
-		}
+
+		save();
 
 		this.getLogger().info("PermissionShopZ is now disabled.");
 	}
 
-	public static void save(Config<PerkManager> config) throws ConfigLoadException {
-		config.syncSave();
+	public static void save() {
+		configPerk.save();
 //		config.syncSave();
 //		try (FileOutputStream fileOutputStream = new FileOutputStream(file);
 //			 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)){
@@ -131,13 +127,11 @@ public class PermissionShopZ extends TabuuCorePlugin {
 //		}
 	}
 
-	public static void load(Config<PerkManager> config){
-		try {
-			config.syncLoad();
-		} catch (ConfigLoadException e) {
-			e.printStackTrace();
-		}
-//		try (FileInputStream fileInputStream = new FileInputStream(file);
+	public static void load(){
+		configPerk.reload();
+		perkManager.getPerks().clear();
+		configPerk.getMap("shop");
+		//		try (FileInputStream fileInputStream = new FileInputStream(file);
 //			 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
 //
 //			_manager = (PerkManager) objectInputStream.readObject();
@@ -146,9 +140,9 @@ public class PermissionShopZ extends TabuuCorePlugin {
 //		}
 	}
 
-	public void reload() throws ConfigLoadException {
-		save(configPerk);
-		load(configPerk);
+	public void reload() {
+		save();
+		load();
 
 		this.getConfigurationManager().reloadAll();
 	}
@@ -162,7 +156,7 @@ public class PermissionShopZ extends TabuuCorePlugin {
 	}
 
 	public PerkManager getPerkManager(){
-		return _manager;
+		return ();
 	}
 
 	public static PermissionShopZ getInstance(){
